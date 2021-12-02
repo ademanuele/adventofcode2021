@@ -7,6 +7,7 @@ def main():
         
         x = 0
         d = 0
+        a = 0
 
         for line in lines:
             parts = line.split(" ")
@@ -15,10 +16,11 @@ def main():
 
             if command == "forward":
                 x += value
+                d += a * value
             if command == "down":
-                d += value
+                a += value
             if command == "up":
-                d -= value
+                a -= value
 
         print(x * d)
 
