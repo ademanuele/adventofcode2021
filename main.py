@@ -1,17 +1,19 @@
 
 def main():
     with open('input.txt') as f:
-        lines = f.readlines()
+        lines = map(lambda l: int(l), f.readlines())
 
         print("Starting...")
         count = 0
-        previous = int(lines[0])
+        previousTotal = lines[0] + lines[1] + lines[2]
 
-        for line in lines:
-            depth = int(line)
-            if depth > previous:
+        for i in range(len(lines) - 2):            
+            currentTotal = lines[i] + lines[i + 1] + lines[i + 2]
+                    
+            if currentTotal > previousTotal:
                 count += 1
-            previous = depth
+
+            previousTotal = currentTotal
         
         print(count)
 
