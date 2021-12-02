@@ -1,21 +1,26 @@
 
 def main():
     with open('input.txt') as f:
-        lines = map(lambda l: int(l), f.readlines())
+        lines = f.readlines()
 
         print("Starting...")
-        count = 0
-        previousTotal = lines[0] + lines[1] + lines[2]
-
-        for i in range(len(lines) - 2):            
-            currentTotal = lines[i] + lines[i + 1] + lines[i + 2]
-                    
-            if currentTotal > previousTotal:
-                count += 1
-
-            previousTotal = currentTotal
         
-        print(count)
+        x = 0
+        d = 0
+
+        for line in lines:
+            parts = line.split(" ")
+            command = parts[0]
+            value = int(parts[1])
+
+            if command == "forward":
+                x += value
+            if command == "down":
+                d += value
+            if command == "up":
+                d -= value
+
+        print(x * d)
 
 if __name__ == "__main__":
     main()
