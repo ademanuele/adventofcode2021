@@ -1,9 +1,10 @@
 from os import stat
 from collections import defaultdict
 from math import *
+import timeit
 
 def main():
-    print("Starting...")
+    start = timeit.default_timer()    
 
     with open('input.txt') as f:
         lines = f.readlines()
@@ -12,19 +13,20 @@ def main():
         for lineS in lines:            
             line = Line(lineS)
 
-            if line.is_diagonal():
-                continue
-
             for point in line.to_points():
                 point_counts[str(point)] += 1
 
         count = 0
-        print_grid(point_counts, 20, 20)
+        
         for i in point_counts.values():
             if i > 1:
                 count += 1
 
         print(count)
+
+        stop = timeit.default_timer()
+
+        print(f"Time: {stop - start}")
 
 def print_grid(points, width, height):
     for i in range(height):
