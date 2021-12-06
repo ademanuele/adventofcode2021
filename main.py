@@ -7,22 +7,21 @@ def main():
     with open('input.txt') as f:
         lines = f.readlines()
         
-        fish = list(map(lambda f: int(f), lines[0].split(",")))
+        fish_initial = list(map(lambda f: int(f), lines[0].split(",")))
 
-        for i in range(256):
-            new_fish_count = 0
-            for f_index in range(len(fish)):
-                if fish[f_index] == 0:
-                    fish[f_index] = 6
-                    new_fish_count += 1
-                    continue
+        fish = [0] * 9
 
-                fish[f_index] -= 1
+        for f in fish_initial:
+            fish[f] += 1
 
-            for i in [8] * new_fish_count:
-                fish.append(i)
+        for i in range(257):
+            print(f"{fish} : {sum(fish)}")
+            new_fish_count = fish[0]
+            for f_index in range(8):
+                fish[f_index] = fish[f_index + 1]
 
-        print(len(fish))
+            fish[6] += new_fish_count
+            fish[8] = new_fish_count
 
 if __name__ == "__main__":
     main()
