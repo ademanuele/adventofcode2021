@@ -5,23 +5,15 @@ import timeit
 
 def main():
     with open('input.txt') as f:
-        lines = f.readlines()
+        positions = f.readlines()[0].split(",")
+        numbers = [int(position) for position in positions]
+
+        costs = []
+
+        for i in range(min(numbers), max(numbers)):
+            costs.append(sum(list(map(lambda n: abs(n - i), numbers))))
         
-        fish_initial = list(map(lambda f: int(f), lines[0].split(",")))
-
-        fish = [0] * 9
-
-        for f in fish_initial:
-            fish[f] += 1
-
-        for i in range(257):
-            print(f"{fish} : {sum(fish)}")
-            new_fish_count = fish[0]
-            for f_index in range(8):
-                fish[f_index] = fish[f_index + 1]
-
-            fish[6] += new_fish_count
-            fish[8] = new_fish_count
+        print(min(costs))
 
 if __name__ == "__main__":
     main()
