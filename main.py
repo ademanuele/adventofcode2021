@@ -8,58 +8,26 @@ def main():
     with open('input.txt') as f:
         lines = f.readlines()
 
-        start = timeit.default_timer()
+    start = timeit.default_timer()
 
-        count = 0
+    points = list(map(lambda line: list(map(lambda p: int(p), line.strip())), lines))
+    low_points = []
 
-        for line in lines:
-            parts = line.split("|")
-            digit_map_string = parts[0].strip().split(" ")
-            digits = parts[1].strip().split(" ")
+    for y in range(len(points)):
+        for x in range(len(points[y])):
+            point = points[y][x]
+            left_is_lower = x > 0 and points[y][x - 1] <= point
+            right_is_lower = x < len(points[y]) - 1 and points[y][x + 1] <= point
+            above_is_lower = y > 0 and points[y - 1][x] <= point
+            below_is_lower = y < len(points) - 1 and points[y + 1][x] <= point
+
+            if left_is_lower or right_is_lower or above_is_lower or below_is_lower:
+                continue
             
-            one = digit_with_segment_count(2, digit_map_string)
-            four = digit_with_segment_count(4, digit_map_string)
-            seven = digit_with_segment_count(3, digit_map_string)
-            eight = digit_with_segment_count(7, digit_map_string)
+            low_points.append(point)
 
-            occurances = defaultdict(lambda: 0)
-            for m in digit_map_string:
-                for char in m:
-                    occurances[char] += 1
-
-            top_segment = list(seven - one)[0]
-            bottom_right_segment = list(filter(lambda o: o[1] == 9, occurances.items()))[0][0]
-            top_right_segment = list(one - set([bottom_right_segment]))[0]
-            bottom_left_segment = list(filter(lambda o: o[1] == 4, occurances.items()))[0][0]
-            top_left_segment = list(filter(lambda o: o[1] == 6, occurances.items()))[0][0]
-            middle_segment = list(four - frozenset([top_left_segment, top_right_segment, bottom_right_segment]))[0]
-            bottom_segment = list(eight - set([top_segment,  bottom_right_segment, top_right_segment, bottom_left_segment, middle_segment, top_left_segment]))[0]
-
-            digit_map = {
-                frozenset([top_segment, top_left_segment, top_right_segment, bottom_left_segment, bottom_right_segment, bottom_segment]): '0',
-                one: '1',
-                frozenset([top_segment, top_right_segment, middle_segment, bottom_left_segment, bottom_segment]): '2',
-                frozenset([top_segment, middle_segment, bottom_segment, top_right_segment, bottom_right_segment]): '3',
-                four: '4',
-                frozenset([top_segment, top_left_segment, middle_segment, bottom_right_segment, bottom_segment]): '5',
-                frozenset([top_segment, top_left_segment, middle_segment, bottom_left_segment, bottom_right_segment, bottom_segment]): '6',
-                seven: '7',
-                eight: '8',
-                frozenset([top_segment, top_left_segment, top_right_segment, middle_segment, bottom_right_segment, bottom_segment]): '9',
-            }
-
-            number = ""
-            for digit in digits:
-                number += digit_map[frozenset(digit)]
-            
-            count += int(number)
-
-        end = timeit.default_timer()
-        print(f"Count: {count}")
-        print(f"Time: {end - start}")
-
-def digit_with_segment_count(count, digits) -> frozenset[chr]:
-    return frozenset(list(filter(lambda d: len(d) == count, digits))[0])
+    print(low_points)
+    print(sum(low_points) + len(low_points))
 
 if __name__ == "__main__":
     main()
