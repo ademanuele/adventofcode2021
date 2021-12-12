@@ -40,6 +40,7 @@ def main():
     print(len(paths))
 
 def progress(path):
+    has_double = has_double_small(path)
     last_node = path[-1]
 
     if last_node.name == "end":
@@ -50,12 +51,22 @@ def progress(path):
         if neighbour.name == "start":
             continue
 
-        if neighbour.is_small() and neighbour in path:
+        if has_double and neighbour.is_small() and neighbour in path:
             continue
         
         paths.append(list(path) + [neighbour])
 
     return paths
+
+def has_double_small(path) -> bool:
+    counts = defaultdict(lambda: 0)
+    for node in path:
+        if node.is_small():
+            counts[node] += 1
+            if counts[node] == 2:
+                return True
+
+    return False
 
 class Cave:
     def __init__(self, name) -> None:
