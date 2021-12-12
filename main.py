@@ -8,49 +8,43 @@ def main():
     with open('input.txt') as f:
         lines = f.readlines()
     
-    openers = ['(', '{', '[', '<']
-    closers = [')', '}', ']', '>']
-    corrupt_score = { ')': 3, '}': 1197, ']': 57, '>': 25137 }
-    complete_score = { '(': 1, '[': 2, '{': 3, '<': 4 }
+    flashes = 0
+    oct = list(map(lambda l: list(map(lambda o: int(o), l.strip())), lines))
 
-    score = 0
-    scores = []
+    for _ in range(100):
+        print(str(oct).replace("],", "\n").replace(", ", "").replace("[", "").replace("]", "").replace(" ", ""), end="\n\n")
 
-    for line in lines:
-        line = line.strip()
-        symbol_stack = []
+        for j in range(len(oct)):
+            for i in range(len(oct[j])):
+                oct[j][i] += 1
 
-        corrupt = False
+        flashed = []
+        check_again = True
 
-        for symbol in line:
-            if symbol in openers:
-                symbol_stack.append(symbol)
-            else:
-                closer_index = closers.index(symbol)
-                corresponding_opener = openers[closer_index]
-                if symbol_stack[len(symbol_stack) - 1] == corresponding_opener:
-                    symbol_stack.pop()
-                else:
-                    score += corrupt_score[symbol]
-                    corrupt = True
-                    break
-                        
-        if not corrupt:
-            score = 0
-            complete = ""
-            for i in range(len(symbol_stack) - 1, -1, -1):
-                score *= 5
-                score += complete_score[symbol_stack[i]]
-                complete += symbol_stack[i]
+        while check_again:
+            new_flashes = []
+            for j in range(len(oct)):
+                for i in range(len(oct[j])):
 
-            scores.append(score)
+                    if oct[j][i] > 9 and (j, i) not in flashed:
+                        new_flashes.append((j, i))
+                        adjacent = [(j - 1, i - 1), (j - 1, i), (j - 1, i + 1), (j, i - 1), (j, i + 1), (j + 1, i - 1), (j + 1, i), (j + 1, i + 1)]
+                        for fa in adjacent:
+                            invalid = fa[0] < 0 or fa[1] < 0 or fa[0] >= len(oct) or fa[1] >= len(oct[fa[0]])
+                            if not invalid:
+                                oct[fa[0]][fa[1]] += 1
 
-            print(f"{complete} = {score}")             
+            flashed += new_flashes
 
-    scores.sort()
-    print(scores)
-    print(len(scores))
-    print(scores[int(len(scores) / 2)])
+            if len(new_flashes) == 0:
+                check_again = False
+
+        for f in flashed:
+            oct[f[0]][f[1]] = 0
+        
+        flashes += len(flashed)
+
+    print(flashes)
 
 if __name__ == "__main__":
     main()
