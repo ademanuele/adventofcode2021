@@ -7,56 +7,50 @@ import timeit
 def main():
     with open('input.txt') as f:
         lines = f.readlines()
+    
+    openers = ['(', '{', '[', '<']
+    closers = [')', '}', ']', '>']
+    corrupt_score = { ')': 3, '}': 1197, ']': 57, '>': 25137 }
+    complete_score = { '(': 1, '[': 2, '{': 3, '<': 4 }
 
-    start = timeit.default_timer()
+    score = 0
+    scores = []
 
-    points = list(map(lambda line: list(map(lambda p: int(p), line.strip())), lines))
-    low_points = []
+    for line in lines:
+        line = line.strip()
+        symbol_stack = []
 
-    for y in range(len(points)):
-        for x in range(len(points[y])):
-            point = points[y][x]
-            left_is_lower = x > 0 and points[y][x - 1] <= point
-            right_is_lower = x < len(points[y]) - 1 and points[y][x + 1] <= point
-            above_is_lower = y > 0 and points[y - 1][x] <= point
-            below_is_lower = y < len(points) - 1 and points[y + 1][x] <= point
+        corrupt = False
 
-            if left_is_lower or right_is_lower or above_is_lower or below_is_lower:
-                continue
-            
-            low_points.append((y, x))
+        for symbol in line:
+            if symbol in openers:
+                symbol_stack.append(symbol)
+            else:
+                closer_index = closers.index(symbol)
+                corresponding_opener = openers[closer_index]
+                if symbol_stack[len(symbol_stack) - 1] == corresponding_opener:
+                    symbol_stack.pop()
+                else:
+                    score += corrupt_score[symbol]
+                    corrupt = True
+                    break
+                        
+        if not corrupt:
+            score = 0
+            complete = ""
+            for i in range(len(symbol_stack) - 1, -1, -1):
+                score *= 5
+                score += complete_score[symbol_stack[i]]
+                complete += symbol_stack[i]
 
-    basin_sizes = []
+            scores.append(score)
 
-    for point in low_points:
-        boundary = [point]
-        checked_points = set()
+            print(f"{complete} = {score}")             
 
-        while len(boundary) > 0:
-            p = boundary.pop()
-            checked_points.add(p)
-
-            py = p[0]
-            px = p[1]
-            p_value = points[py][px]
-
-            for adjacent in [(py, px - 1), (py, px + 1), (py - 1, px), (py + 1, px)]:
-                if (adjacent[0] < 0) or (adjacent[0] >= len(points)) or (adjacent[1] < 0) or (adjacent[1] >= len(points[adjacent[0]])):
-                    continue
-                
-                in_value_range = points[adjacent[0]][adjacent[1]] >= p_value and points[adjacent[0]][adjacent[1]] < 9
-                if in_value_range and adjacent not in checked_points:
-                    boundary.append(adjacent)
-
-            # print(f"Checked: {len(checked_points)} Boundary: {len(boundary)}")
-            
-        # print(list(map(lambda p: points[p[0]][p[1]], checked_points)))
-        print(f"Basin size: {len(checked_points)}")
-        basin_sizes.append(len(checked_points))
-
-    basin_sizes.sort()
-    basins = len(basin_sizes)
-    print(basin_sizes[basins - 1] * basin_sizes[basins - 2] * basin_sizes[basins - 3])
+    scores.sort()
+    print(scores)
+    print(len(scores))
+    print(scores[int(len(scores) / 2)])
 
 if __name__ == "__main__":
     main()
