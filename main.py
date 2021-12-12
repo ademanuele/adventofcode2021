@@ -11,8 +11,11 @@ def main():
     flashes = 0
     oct = list(map(lambda l: list(map(lambda o: int(o), l.strip())), lines))
 
-    for _ in range(100):
-        print(str(oct).replace("],", "\n").replace(", ", "").replace("[", "").replace("]", "").replace(" ", ""), end="\n\n")
+    iteration = 0
+
+    while True:
+        iteration += 1
+        # print(str(oct).replace("],", "\n").replace(", ", "").replace("[", "").replace("]", "").replace(" ", ""), end="\n\n")
 
         for j in range(len(oct)):
             for i in range(len(oct[j])):
@@ -42,6 +45,10 @@ def main():
         for f in flashed:
             oct[f[0]][f[1]] = 0
         
+        if len(flashed) == 100:
+            print(f"HERE: {iteration}")
+            exit()
+
         flashes += len(flashed)
 
     print(flashes)
